@@ -30,4 +30,4 @@ FUNCTION IsPlacementLegal(board, coordinates)
     ENDIF
 ENDFUNCTION
 ```
-I made the decision in the end for no success reporting for "execute_turn" and "is_placement_legal" checks for if either an "X" or an "O" is there to return a false. Allowing for different "empty" placeholders within spaces besides " ".
+I made the decision in the end for no success reporting for "execute_turn" and "is_placement_legal" checks for if either an "X" or an "O" is there to return a false. Allowing for different "empty" placeholders within spaces besides " ". Additionally, I realized after running "is_placement_legal", "execute_turn" simply places the icon in the desired location. From a design perspective, checking legality isn't really part of performing your turn. So instead I renamed "execute_turn" to simply "place_icon". This was much easier to follow.
