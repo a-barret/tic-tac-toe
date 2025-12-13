@@ -10,7 +10,9 @@ Alternating between player X and player O, allow the current player to select a 
 
 # Design
 ## Flowchart
-<img src="Images/TicTacToeFlowchart.png" alt="Tic Tac Toe Flowchart" width="800">
+<p align="center">
+  <img src="Images/TicTacToeFlowchart.png" alt="Tic Tac Toe Flowchart" width="600">
+</p>
 
 One of the more confusing pieces to implement was the function to change the board at the location the player wanted to place their icon. I wrote the solution in pseudocode first to better understand the process.
 ```pseudocode
