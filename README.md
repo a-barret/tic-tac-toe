@@ -30,3 +30,4 @@ FUNCTION IsPlacementLegal(board, coordinates)
     ENDIF
 ENDFUNCTION
 ```
+I made the decision in the end for no success reporting for "execute_turn" and "is_placement_legal" checks for if either an "X" or an "O" is there to return a false. Allowing for different "empty" placeholders within spaces besides " ".
