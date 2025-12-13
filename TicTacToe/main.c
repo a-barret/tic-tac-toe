@@ -13,26 +13,134 @@ struct Coordinates {
     int col;
 };
 
+/**
+ * @brief Displays the explanation of how to play the game.
+ *
+ * @details Uses printf() to display the controls for the game. It then calls
+ * the "wait for enter" function to give reading time to the user(s).
+ */
 void display_welcome_message(void);
 
+/**
+ * @brief Waits for the user to press enter (input newline) to the terminal.
+ *
+ * @details Uses getchar() to see what the next item in the input stream and
+ * continues grabbing the next item until that item is a "\n" character.
+ */
 void wait_for_enter(void);
 
+/**
+ * @brief An algorithm that displays a 2D board list that it recieves.
+ *
+ * @details Iterates through both the rows and columns of the 2D board list and
+ * uses printf() to display each item separated by pipes and dashes to create a
+ * tic tac toe board layout.
+ *
+ * @param[in] board This is a 2D list of char values.
+ */
 void display_board(char board[3][3]);
 
+/**
+ * @brief Based off the number of turns, returns a char 'X' or 'O'.
+ *
+ * @details Uses an integer value representing the number of turns taken in the
+ * game so far and determines if it is even or odd (0 is even). The formula is
+ * number MOD 2. Even means X is the current player. Odd means O. It returns
+ * the icon as a char value.
+ *
+ * @param[in] turn_count Number of turns taken so far in the game.
+ *
+ * @return The char value representing the current player ('X' or 'O')
+ */
 char get_current_player_icon(int turn_count);
 
+/**
+ * @brief Clears out any whitespace characters from the input feed.
+ *
+ * @details Uses a while loop to pull the next character from the input feed
+ * and then does nothing with it, moving to the next character until they are
+ * all gone.
+ */
 void flush_line(void);
 
+/**
+ * @brief Converts a 1-9 integer value into a set of row, column coordinates.
+ *
+ * @details Takes a integer representing a location on a Tic Tac Toe board and
+ * then, using the formula to calculate the row and column, places those
+ * results into the row and column values of the struct respectively. The
+ * formula of the row is rounddown(n / 3) and the formula for the column is
+ * n MOD 3.
+ *
+ * @param[in] coordinates A pointer to a coordinates struct.
+ * @param[in] user_selection An integer representing a Tic Tac Toe location to
+ * be converted to coordinates.
+ */
 void convert_selection_to_coordinates(struct Coordinates* coordinates, int user_selection);
 
-void execute_turn(char board[3][3], char current_player_icon, struct Coordinates coordinates);
-
+/**
+ * @brief Checks if a given space already has an icon in the space.
+ *
+ * @details Uses the coordinates to check a space on the board input. If there
+ * is an 'X' or an 'O', the function will return a 0 (false) value and 1 (true)
+ * if not.
+ *
+ * @param[in] board A 2D list representing each space on a Tic Tac Toe board.
+ * @param[in] coordinates A struct with a row and column integer value.
+ *
+ * @return An integer value representing true or false legality.
+ */
 int is_placement_legal(char board[3][3], struct Coordinates coordinates);
 
+/**
+ * @brief Puts the current player's icon at the designated coordinates.
+ *
+ * @details Uses the given coordinates to find the right space on the board and
+ * then places the given player icon in that space.
+ *
+ * @param[in] board A 2D list representing each space on a Tic Tac Toe board.
+ * @param[in] current_player_icon A char value of the current player's icon.
+ * @param[in] coordinates A struct with a row and column integer value.
+ */
+void place_icon(char board[3][3], char current_player_icon, struct Coordinates coordinates);
+
+/**
+ * @brief Check all conditions of the board being in a winning state.
+ *
+ * @details Checks for three in a row horizontally in any row, vertically in
+ * any column, or diagonally from any two opposite corners.
+ *
+ * @param[in] board A 2D list representing each space on a Tic Tac Toe board.
+ * @param[in] current_player_icon A char value of the current player's icon.
+ *
+ * @return An integer 1 or 0. 1 for true, 0 for false.
+ */
 int is_game_won(char board[3][3], char current_player_icon);
 
+/**
+ * @brief Displays a message to the user(s) of the status of the completed game.
+ *
+ * @details Uses the status of the game being won or not to tell the user that
+ * the current player has won or if the game was not won then to tell the user
+ * that the game is a tie.
+ *
+ * @param[in] game_won A true or false integer value.
+ * @param[in] current_player_icon A char value of the current player's icon.
+ */
 void display_completion_message(int game_won, char current_player_icon);
 
+/**
+ * @brief Changes the user setting to display numbers on spaces or not.
+ *
+ * @details Changes the boards empty values to contain their corresponding
+ * integer values or not. It does not change spaces that have an 'X' or an 'O'
+ * char value. It sets their current value to the opposite of what they
+ * currently are.
+ *
+ * @param[in] board A 2D list representing each space on a Tic Tac Toe board.
+ * @param[in] include_number_guides A true or false integer value showing the
+ * status of the showing the number guides or not.
+ */
 void toggle_number_guides(char board[3][3], int* include_number_guides);
 
 int main(void) {
@@ -62,18 +170,22 @@ int main(void) {
         if (user_selection >= 1 && user_selection <= 9) {
             struct Coordinates* coordinates = malloc(sizeof(*coordinates));
             convert_selection_to_coordinates(coordinates, user_selection);
-            execute_turn(board, current_player_icon, *coordinates);
-            free(coordinates);
-            game_won = is_game_won(board, current_player_icon);
-            if (turn_count >= 8 || game_won) {
-                in_progress = 0;
-                if (include_number_guides) {
-                    toggle_number_guides(board, &include_number_guides);
+            if (is_placement_legal(board, *coordinates)) {
+                place_icon(board, current_player_icon, *coordinates);
+                free(coordinates);
+                game_won = is_game_won(board, current_player_icon);
+                if (turn_count >= 8 || game_won) {
+                    in_progress = 0;
+                    if (include_number_guides) {
+                        toggle_number_guides(board, &include_number_guides);
+                    }
+                    display_board(board);
+                    display_completion_message(game_won, current_player_icon);
                 }
-                display_board(board);
-                display_completion_message(game_won, current_player_icon);
+                turn_count++;
+            } else {
+                printf("An %c cannot be placed there.\n", current_player_icon);
             }
-            turn_count++;
         } else if (user_selection == 10) {
             toggle_number_guides(board, &include_number_guides);
         } else if (user_selection == 11) {
@@ -112,7 +224,7 @@ void wait_for_enter(void) {
 }
 
 void display_board(char board[3][3]) {
-    printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCurrent board:\n");
+    printf("Current board:\n");
     for (int row = 0; row < 3; row++) {
         for (int col = 0; col < 3; col++) {
             printf(" %c ", board[row][col]);
@@ -148,20 +260,16 @@ void convert_selection_to_coordinates(struct Coordinates* coordinates, int user_
     coordinates->col = (user_selection - 1) % 3;
 }
 
-void execute_turn(char board[3][3], char current_player_icon, struct Coordinates coordinates) {
-    if (is_placement_legal(board, coordinates)) {
-        board[coordinates.row][coordinates.col] = current_player_icon;
-    } else {
-        printf("An %c cannot be placed there.", current_player_icon);
-    }
-}
-
 int is_placement_legal(char board[3][3], struct Coordinates coordinates) {
     if (board[coordinates.row][coordinates.col] != 'X' && board[coordinates.row][coordinates.col] != 'O') {
         return 1;
     } else {
         return 0;
     }
+}
+
+void place_icon(char board[3][3], char current_player_icon, struct Coordinates coordinates) {
+    board[coordinates.row][coordinates.col] = current_player_icon;
 }
 
 int is_game_won(char board[3][3], char current_player_icon) {
