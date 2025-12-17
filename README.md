@@ -42,3 +42,29 @@ FUNCTION IsPlacementLegal(board, coordinates)
 ENDFUNCTION
 ```
 I made the decision in the end for no success reporting for "execute_turn" and "is_placement_legal" checks for if either an "X" or an "O" is there to return a false. Allowing for different "empty" placeholders within spaces besides " ". Additionally, I realized after running "is_placement_legal", "execute_turn" simply places the icon in the desired location. From a design perspective, checking legality isn't really part of performing your turn. So instead I renamed "execute_turn" to simply "place_icon". This was much easier to follow.
+```pseudocode
+FUNCTION PlaceIcon(board, currentPlayerIcon, coordinates)
+    SET board[coordinates[0]][coordinates[1]] = currentPlayerIcon
+ENDFUNCTION
+
+FUNCTION IsPlacementLegal(board, coordinates)
+    IF board[coordinates[0]][coordinates[1]] IS NOT "X" AND IS NOT "O"
+        RETURN TRUE
+    ELSE
+        RETURN FALSE
+    ENDIF
+ENDFUNCTION
+
+FUNCTION main()
+    SET board = [
+        [" ", " ", " "],
+        [" ", " ", " "],
+        [" ", " ", " "]
+    ]
+    GET coordinates from user
+    // Insert other code here...
+    IF IsPlacementLegal(board, coordinates)
+        PlaceIcon(board, currentPlayerIcon, coordinates)
+    ENDIF
+ENDFUNCTION
+```
